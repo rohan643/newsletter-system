@@ -1,0 +1,33 @@
+rss_feeds:
+  - url: "https://hnrss.org/frontpage"
+    label: "Hacker News"
+    weight: 0.8
+  - url: "https://www.ben-evans.com/benedictevans/rss.xml"
+    label: "Benedict Evans"
+    weight: 1.0
+  - url: "https://feeds.feedburner.com/oreilly/radar"
+    label: "O'Reilly Radar"
+    weight: 0.7
+
+google_alerts_keywords:
+  - "business automation 2026"
+  - "AI tools small business"
+  - "workflow automation case study"
+  - "no-code automation"
+
+airtable:
+  base_id: "appXXXXXXXXXXXXXX"
+  content_queue_table: "Content Ideas"
+  draft_table: "Newsletter Drafts"
+  subscribers_table: "Subscribers"
+
+beehiiv:
+  publication_id: "pub_XXXXXXXX"
+  default_status: "draft"
+
+send_schedule:
+  day: "monday"
+  draft_time: "06:00"
+  review_window_hours: 3
+  send_time: "09:00"
+  timezone: "America/Chicago"
