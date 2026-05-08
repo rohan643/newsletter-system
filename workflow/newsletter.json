@@ -1,0 +1,203 @@
+{
+  "name": "Weekly Newsletter \u2014 Full Automation",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "minutesInterval": 1
+            }
+          ]
+        },
+        "cronExpression": "0 6 * * 1"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Fetch RSS Feeds",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        400,
+        200
+      ],
+      "parameters": {
+        "url": "={{$env.RSS_FEEDS}}"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Fetch Content Queue",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        400,
+        400
+      ],
+      "parameters": {
+        "operation": "list",
+        "table": "Content Ideas"
+      }
+    },
+    {
+      "id": "4",
+      "name": "Merge Sources",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        600,
+        300
+      ],
+      "parameters": {
+        "mode": "combine"
+      }
+    },
+    {
+      "id": "5",
+      "name": "GPT-4o Draft Newsletter",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        800,
+        300
+      ],
+      "parameters": {
+        "model": "gpt-4o",
+        "operation": "message"
+      }
+    },
+    {
+      "id": "6",
+      "name": "Save Draft to Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "operation": "create",
+        "table": "Newsletter Drafts"
+      }
+    },
+    {
+      "id": "7",
+      "name": "Wait for Review",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1200,
+        300
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "unit": "hours",
+        "value": 3
+      }
+    },
+    {
+      "id": "8",
+      "name": "Publish to Beehiiv",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1400,
+        300
+      ],
+      "parameters": {
+        "url": "https://api.beehiiv.com/v2/publications/{{pubId}}/posts",
+        "method": "POST"
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch RSS Feeds",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Content Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch RSS Feeds": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Content Queue": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Sources": {
+      "main": [
+        [
+          {
+            "node": "GPT-4o Draft Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4o Draft Newsletter": {
+      "main": [
+        [
+          {
+            "node": "Save Draft to Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Draft to Airtable": {
+      "main": [
+        [
+          {
+            "node": "Wait for Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Review": {
+      "main": [
+        [
+          {
+            "node": "Publish to Beehiiv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c3d4e5f6-a7b8-9012-cdef-345678901234"
+}
