@@ -1,0 +1,5 @@
+.env
+__pycache__/
+config/voice-samples/
+config/voice-prompt.txt
+.DS_Store
